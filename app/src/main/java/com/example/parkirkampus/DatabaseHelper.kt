@@ -35,6 +35,7 @@ class DatabaseHelper {
             }
 
             override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
                 callback(response.body!!.string())
             }
         })
