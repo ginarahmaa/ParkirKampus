@@ -2,68 +2,91 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FA">
+    android:background="#F2F4FF">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:padding="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <TextView
             android:text="🚗 PARKIR KAMPUS"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#1E88E5"
+            android:textColor="#2E3A59"
             android:gravity="center"
+            android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <EditText
-            android:id="@+id/etPlat"
-            android:hint="Plat Kendaraan"
+        <LinearLayout
+            android:background="@android:color/white"
+            android:padding="16dp"
+            android:elevation="6dp"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/etJenis"
-            android:hint="Jenis (Motor / Mobil)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <EditText
+                android:id="@+id/etPlat"
+                android:hint="Plat Nomor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-        <EditText
-            android:id="@+id/etJamMasuk"
-            android:hint="Jam Masuk (08:00)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <EditText
+                android:id="@+id/etJenis"
+                android:hint="Jenis Kendaraan (Motor/Mobil)"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-        <EditText
-            android:id="@+id/etJamKeluar"
-            android:hint="Jam Keluar (10:00)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <EditText
+                android:id="@+id/etJamMasuk"
+                android:hint="Jam Masuk (08:00)"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-        <Button
-            android:id="@+id/btnSimpan"
-            android:text="SIMPAN"
-            android:backgroundTint="#1E88E5"
-            android:textColor="#FFFFFF"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <EditText
+                android:id="@+id/etJamKeluar"
+                android:hint="Jam Keluar (10:00)"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-        <Button
-            android:id="@+id/btnDelete"
-            android:text="HAPUS"
-            android:backgroundTint="#E53935"
-            android:textColor="#FFFFFF"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <Button
+                android:id="@+id/btnSimpan"
+                android:text="SIMPAN"
+                android:backgroundTint="#4A6CF7"
+                android:textColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btnEdit"
+                android:text="EDIT"
+                android:backgroundTint="#FFA726"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:text="HAPUS"
+                android:backgroundTint="#EF5350"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvData"
-            android:text="Data Parkir"
+            android:text="Data parkir akan tampil di sini"
+            android:background="@android:color/white"
+            android:padding="12dp"
             android:textSize="14sp"
-            android:paddingTop="12dp"
+            android:layout_marginTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
