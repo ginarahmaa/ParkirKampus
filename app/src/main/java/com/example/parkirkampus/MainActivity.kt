@@ -25,7 +25,12 @@ class MainActivity : AppCompatActivity() {
 
         val watcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                hitungTotal(etJenis, etJamMasuk, etJamKeluar, tvTotal)
+                val total = hitungTotalValue(
+                    etJenis.text.toString(),
+                    etJamMasuk.text.toString(),
+                    etJamKeluar.text.toString()
+                )
+                tvTotal.text = "Total Bayar: Rp $total"
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}

@@ -30,24 +30,18 @@ class DatabaseHelper {
         })
     }
 
-
     fun updateData(p: Parkir, callback: (Boolean) -> Unit = {}) {
         val url = "$baseUrl?proc=update" +
                 "&plat=${p.plat}" +
                 "&jenis=${p.jenis}" +
                 "&jam_masuk=${p.jam_masuk}" +
-                "&jam_keluar=${p.jam_keluar}"
+                "&jam_keluar=${p.jam_keluar}" +
+                "&total_bayar=${p.total_bayar}"
 
         val request = Request.Builder().url(url).build()
-
         client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                callback(false) // panggil callback dengan false
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                callback(response.isSuccessful) // true jika update berhasil
-            }
+            override fun onFailure(call: Call, e: IOException) = callback(false)
+            override fun onResponse(call: Call, response: Response) = callback(response.isSuccessful)
         })
     }
 
@@ -68,14 +62,12 @@ class DatabaseHelper {
         })
     }
 
-    fun deleteData(plat: String) {
-        val request = Request.Builder()
-            .url("$baseUrl?proc=del&plat=$plat")
-            .build()
-
+    fun deleteData(plat: String, callback: (Boolean) -> Unit = {}) {
+        val url = "$baseUrl?proc=del&plat=$plat"
+        val request = Request.Builder().url(url).build()
         client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {}
-            override fun onResponse(call: Call, response: Response) {}
+            override fun onFailure(call: Call, e: IOException) = callback(false)
+            override fun onResponse(call: Call, response: Response) = callback(response.isSuccessful)
         })
     }
 }
