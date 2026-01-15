@@ -70,4 +70,17 @@ class DatabaseHelper {
             override fun onResponse(call: Call, response: Response) = callback(response.isSuccessful)
         })
     }
+
+    fun checkPlat(plat: String, callback: (Boolean) -> Unit) {
+        val url = "$baseUrl?proc=getbyplat&plat=$plat"
+        val request = Request.Builder().url(url).build()
+        client.newCall(request).enqueue(object: Callback {
+            override fun onFailure(call: Call, e: IOException) = callback(false)
+            override fun onResponse(call: Call, response: Response) {
+                val body = response.body?.string() ?: ""
+                callback(body.isNotEmpty())
+            }
+        })
+    }
 }
+
