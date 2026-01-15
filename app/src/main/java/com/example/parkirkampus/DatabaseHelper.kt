@@ -23,6 +23,25 @@ class DatabaseHelper {
         })
     }
 
+    fun updateData(p: Parkir, callback: (Boolean) -> Unit = {}) {
+        val url = "$baseUrl?proc=update" +
+                "&plat=${p.plat}" +
+                "&jenis=${p.jenis}" +
+                "&jam_masuk=${p.jam_masuk}" +
+                "&jam_keluar=${p.jam_keluar}"
+
+        val request = Request.Builder().url(url).build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                callback(false) // panggil callback dengan false
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                callback(response.isSuccessful) // true jika update berhasil
+            }
+        })
+    }
 
     fun getAllData(callback: (String) -> Unit) {
         val request = Request.Builder()
