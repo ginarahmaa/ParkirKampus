@@ -25,16 +25,48 @@ class EditParkirActivity : AppCompatActivity() {
         etPlat.setText(plat)
 
         btnSave.setOnClickListener {
+            val jenis = etJenis.text.toString()
+            val jamMasuk = etJamMasuk.text.toString()
+            val jamKeluar = etJamKeluar.text.toString()
+
+            val total = hitungTotalValue(jenis, jamMasuk, jamKeluar)
+
             val parkir = Parkir(
-                etPlat.text.toString(),
-                etJenis.text.toString(),
-                etJamMasuk.text.toString(),
-                etJamKeluar.text.toString()
+                plat = etPlat.text.toString(),
+                jenis = jenis,
+                jam_masuk = jamMasuk,
+                jam_keluar = jamKeluar,
+                total_bayar = total
             )
 
-            db.updateData(parkir)
-            Toast.makeText(this, "Data diupdate", Toast.LENGTH_SHORT).show()
-            finish()
+
+            db.updateData(parkir) { success ->
+                runOnUiThread {
+                    if (success) {
+                        Toast.makeText(this, "Data berhasil diupdate", Toast.LENGTH_SHORT).show()
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Update gagal", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun hitungTotalValue(jenis: String, jm: String, jk: String): Int {
+        try {
+            if (jenis.isEmpty() || jm.length < 2 || jk.length < 2) return 0
+
+            val jamMasuk = jm.substring(0, 2).toInt()
+            val jamKeluar = jk.substring(0, 2).toInt()
+
+            var durasi = jamKeluar - jamMasuk
+            if (durasi < 1) durasi = 1
+
+            val tarif = if (jenis.equals("Motor", true)) 2000 else 5000
+            return durasi * tarif
+        } catch (e: Exception) {
+            return 0
         }
     }
 }

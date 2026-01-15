@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
         val tvTotal = findViewById<TextView>(R.id.tvTotal)
         val btnSimpan = findViewById<Button>(R.id.btnSimpan)
 
-
         val watcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 hitungTotal(etJenis, etJamMasuk, etJamKeluar, tvTotal)
@@ -48,15 +47,31 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+
+            val total = hitungTotalValue(jenis, jamMasuk, jamKeluar)
+
             val parkir = Parkir(
                 plat = plat,
                 jenis = jenis,
                 jam_masuk = jamMasuk,
-                jam_keluar = jamKeluar
+                jam_keluar = jamKeluar,
+                total_bayar = total
             )
 
-            db.insertData(parkir)
-            Toast.makeText(this, "Data tersimpan", Toast.LENGTH_SHORT).show()
+            db.insertData(parkir) { success ->
+                runOnUiThread {
+                    if (success) {
+                        Toast.makeText(this, "Data tersimpan", Toast.LENGTH_SHORT).show()
+                        etPlat.text.clear()
+                        etJenis.text.clear()
+                        etJamMasuk.text.clear()
+                        etJamKeluar.text.clear()
+                        tvTotal.text = "Total Bayar: Rp 0"
+                    } else {
+                        Toast.makeText(this, "Gagal menyimpan data", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
 
@@ -66,26 +81,21 @@ class MainActivity : AppCompatActivity() {
         etJamKeluar: EditText,
         tvTotal: TextView
     ) {
+        val total = hitungTotalValue(etJenis.text.toString(), etJamMasuk.text.toString(), etJamKeluar.text.toString())
+        tvTotal.text = "Total Bayar: Rp $total"
+    }
+
+    private fun hitungTotalValue(jenis: String, jm: String, jk: String): Int {
         try {
-            val jenis = etJenis.text.toString()
-            val jm = etJamMasuk.text.toString()
-            val jk = etJamKeluar.text.toString()
-
-            if (jenis.isEmpty() || jm.length < 2 || jk.length < 2) return
-
+            if (jenis.isEmpty() || jm.length < 2 || jk.length < 2) return 0
             val jamMasuk = jm.substring(0, 2).toInt()
             val jamKeluar = jk.substring(0, 2).toInt()
-
             var durasi = jamKeluar - jamMasuk
             if (durasi < 1) durasi = 1
-
             val tarif = if (jenis.equals("Motor", true)) 2000 else 5000
-            val total = durasi * tarif
-
-            tvTotal.text = "Total Bayar: Rp $total"
-
+            return durasi * tarif
         } catch (e: Exception) {
-            tvTotal.text = "Total Bayar: Rp 0"
+            return 0
         }
     }
 }
