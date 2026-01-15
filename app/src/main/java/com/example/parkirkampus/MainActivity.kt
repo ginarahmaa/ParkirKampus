@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,6 +15,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var etJamMasuk: EditText
     lateinit var etJamKeluar: EditText
     lateinit var tvTotal: TextView
+    lateinit var llData: LinearLayout
+    lateinit var btnSimpan: Button
+
+    private var isEditMode = false
+    private var currentEditPlat: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +32,8 @@ class MainActivity : AppCompatActivity() {
         etJamMasuk = findViewById(R.id.etJamMasuk)
         etJamKeluar = findViewById(R.id.etJamKeluar)
         tvTotal = findViewById(R.id.tvTotal)
-        val btnSimpan = findViewById<Button>(R.id.btnSimpan)
-        val btnEdit = findViewById<Button>(R.id.btnEdit)
-        val btnDelete = findViewById<Button>(R.id.btnDelete)
-
+        llData = findViewById(R.id.llData)
+        btnSimpan = findViewById(R.id.btnSimpan)
 
         val watcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -49,104 +53,102 @@ class MainActivity : AppCompatActivity() {
         etJamMasuk.addTextChangedListener(watcher)
         etJamKeluar.addTextChangedListener(watcher)
 
-
         btnSimpan.setOnClickListener {
             val plat = etPlat.text.toString()
             val jenis = etJenis.text.toString()
             val jamMasuk = etJamMasuk.text.toString()
             val jamKeluar = etJamKeluar.text.toString()
-
-            if (plat.isEmpty() || jenis.isEmpty() || jamMasuk.isEmpty() || jamKeluar.isEmpty()) {
-                Toast.makeText(this, "Semua data harus diisi", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
             val total = hitungTotalValue(jenis, jamMasuk, jamKeluar)
+            val parkir = Parkir(plat, jenis, jamMasuk, jamKeluar, total)
 
-            val parkir = Parkir(
-                plat = plat,
-                jenis = jenis,
-                jam_masuk = jamMasuk,
-                jam_keluar = jamKeluar,
-                total_bayar = total
-            )
-
-            db.insertData(parkir) { success ->
-                runOnUiThread {
-                    if (success) {
-                        Toast.makeText(this, "Data tersimpan", Toast.LENGTH_SHORT).show()
-                        resetForm()
-                    } else {
-                        Toast.makeText(this, "Gagal menyimpan data", Toast.LENGTH_SHORT).show()
+            if (!isEditMode) {
+                db.insertData(parkir) { success ->
+                    runOnUiThread {
+                        if (success) {
+                            Toast.makeText(this, "Data tersimpan", Toast.LENGTH_SHORT).show()
+                            resetForm()
+                            loadDataFromServer()
+                        }
                     }
                 }
-            }
-        }
-
-
-        btnEdit.setOnClickListener {
-            val plat = etPlat.text.toString()
-            if (plat.isEmpty()) {
-                Toast.makeText(this, "Masukkan plat dulu", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            db.checkPlat(plat) { exists ->
-                runOnUiThread {
-                    if (!exists) {
-                        Toast.makeText(this, "Plat tidak ditemukan", Toast.LENGTH_SHORT).show()
-                    } else {
-                        val jenis = etJenis.text.toString()
-                        val jamMasuk = etJamMasuk.text.toString()
-                        val jamKeluar = etJamKeluar.text.toString()
-                        val total = hitungTotalValue(jenis, jamMasuk, jamKeluar)
-
-                        val parkir = Parkir(plat, jenis, jamMasuk, jamKeluar, total)
-
-                        db.updateData(parkir) { success ->
-                            runOnUiThread {
-                                if (success) {
-                                    Toast.makeText(this, "Data berhasil diupdate", Toast.LENGTH_SHORT).show()
-                                    resetForm()
-                                } else {
-                                    Toast.makeText(this, "Update gagal", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+            } else {
+                db.updateData(parkir) { success ->
+                    runOnUiThread {
+                        if (success) {
+                            Toast.makeText(this, "Data diperbarui", Toast.LENGTH_SHORT).show()
+                            resetForm()
+                            isEditMode = false
+                            btnSimpan.text = "SIMPAN"
+                            loadDataFromServer()
                         }
                     }
                 }
             }
         }
 
+        loadDataFromServer()
+    }
 
-        btnDelete.setOnClickListener {
-            val plat = etPlat.text.toString()
-            if (plat.isEmpty()) {
-                Toast.makeText(this, "Masukkan plat dulu", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+    private fun loadDataFromServer() {
+        db.getAllData { dataJson ->
+            runOnUiThread {
+                llData.removeAllViews()
+                val jsonArray = JSONArray(dataJson)
+                for (i in 0 until jsonArray.length()) {
+                    val obj = jsonArray.getJSONObject(i)
+                    val plat = obj.getString("plat")
+                    val jenis = obj.getString("jenis")
+                    val jamMasuk = obj.getString("jam_masuk")
+                    val jamKeluar = obj.getString("jam_keluar")
+                    val totalBayar = obj.getInt("total_bayar")
 
-            db.checkPlat(plat) { exists ->
-                runOnUiThread {
-                    if (!exists) {
-                        Toast.makeText(this, "Plat tidak ditemukan", Toast.LENGTH_SHORT).show()
-                    } else {
+                    val itemLayout = LinearLayout(this)
+                    itemLayout.orientation = LinearLayout.HORIZONTAL
+                    itemLayout.layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+
+                    val tvItem = TextView(this)
+                    tvItem.text = "$plat | $jenis | $jamMasuk-$jamKeluar | Rp $totalBayar"
+                    tvItem.layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+
+                    val btnEdit = Button(this)
+                    btnEdit.text = "🖊️"
+                    btnEdit.setOnClickListener {
+                        etPlat.setText(plat)
+                        etJenis.setText(jenis)
+                        etJamMasuk.setText(jamMasuk)
+                        etJamKeluar.setText(jamKeluar)
+                        isEditMode = true
+                        currentEditPlat = plat
+                        btnSimpan.text = "UPDATE"
+                    }
+
+                    val btnDelete = Button(this)
+                    btnDelete.text = "❌"
+                    btnDelete.setOnClickListener {
                         db.deleteData(plat) { success ->
                             runOnUiThread {
                                 if (success) {
-                                    Toast.makeText(this, "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
-                                    resetForm()
-                                } else {
-                                    Toast.makeText(this, "Hapus gagal", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, "Data dihapus", Toast.LENGTH_SHORT).show()
+                                    if (currentEditPlat == plat) resetForm()
+                                    isEditMode = false
+                                    btnSimpan.text = "SIMPAN"
+                                    loadDataFromServer()
                                 }
                             }
                         }
                     }
+
+                    itemLayout.addView(tvItem)
+                    itemLayout.addView(btnEdit)
+                    itemLayout.addView(btnDelete)
+                    llData.addView(itemLayout)
                 }
             }
         }
     }
-
 
     private fun resetForm() {
         etPlat.text.clear()

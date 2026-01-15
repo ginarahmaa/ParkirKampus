@@ -10,16 +10,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:text="🚗 PARKIR KAMPUS"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="#2E3A59"
-            android:gravity="center"
-            android:layout_marginBottom="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
         <LinearLayout
             android:background="@android:color/white"
             android:padding="16dp"
@@ -68,36 +58,13 @@
                 android:textColor="@android:color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-
-            <Button
-                android:id="@+id/btnEdit"
-                android:text="EDIT"
-                android:backgroundTint="#FFA726"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="6dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <Button
-                android:id="@+id/btnDelete"
-                android:text="HAPUS"
-                android:backgroundTint="#EF5350"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="6dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvData"
-            android:text="Data parkir akan tampil di sini"
-            android:background="@android:color/white"
-            android:padding="12dp"
-            android:textSize="14sp"
-            android:layout_marginTop="16dp"
+        <LinearLayout
+            android:id="@+id/llData"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"/>
     </LinearLayout>
 </ScrollView>
