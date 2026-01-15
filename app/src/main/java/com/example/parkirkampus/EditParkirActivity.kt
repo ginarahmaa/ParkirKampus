@@ -32,16 +32,9 @@ class EditParkirActivity : AppCompatActivity() {
                 etJamKeluar.text.toString()
             )
 
-            db.updateData(parkir) { success ->
-                runOnUiThread {
-                    if (success) {
-                        Toast.makeText(this, "Data berhasil diupdate", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this, "Update gagal", Toast.LENGTH_SHORT).show()
-                    }
-                    finish()
-                }
-            }
+            db.updateData(parkir)
+            Toast.makeText(this, "Data diupdate", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 }
