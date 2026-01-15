@@ -8,7 +8,7 @@ class DatabaseHelper {
     private val client = OkHttpClient()
     private val baseUrl = "https://appocalypse.my.id/parkir_kampus.php"
 
- 
+
     fun insertData(p: Parkir) {
         val url = "$baseUrl?proc=in" +
                 "&plat=${p.plat}" +
